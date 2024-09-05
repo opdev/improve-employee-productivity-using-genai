@@ -53,7 +53,7 @@ def handler(event, context):
     current_timestamp = str(int(time.time()))
 
     # Retrieves 'system' if provided, else None
-    system_prompt = body.get('system', None)  
+    system_prompt = body.get('system', None)
 
     # Extract image keys from the event body
     image_s3_keys = body.get('imageS3Keys', [])
@@ -62,7 +62,7 @@ def handler(event, context):
     if image_s3_keys:
         # Make sure the list does not exceed 6 items
         image_s3_keys = image_s3_keys[:6]
-        
+
         images_base64 = get_images_from_s3_as_base64(image_s3_keys)
 
     # Initialize Bedrock client
@@ -74,7 +74,7 @@ def handler(event, context):
         # Prepare the request for Bedrock, including the optional image
         messages_content = [
             {
-             "type": "text", 
+             "type": "text",
              "text": data
             }
         ]
@@ -85,14 +85,14 @@ def handler(event, context):
                     "type": "image",
                     "source": {"type": "base64", "media_type": "image/jpeg", "data": image_base64}
                 })
-    
+
         message = [
             {
-                "role": "user", 
+                "role": "user",
                 "content": messages_content
             }
         ]
-    
+
         # Prepare the JSON payload for Bedrock
         bedrock_request_dict = {
             "anthropic_version": "bedrock-2023-05-31",
@@ -109,13 +109,13 @@ def handler(event, context):
 
         # Now convert the dictionary to a JSON string
         bedrock_payload = json.dumps(bedrock_request_dict)
-        
+
         accept = "application/json"
         contentType = "application/json"
-        
+
         # Initialize a list to collect text chunks
         text_chunks = []
-        
+
         # Invoke Bedrock model
         try:
             response = boto3_bedrock.invoke_model_with_response_stream(body=bedrock_payload, modelId=modelId, accept=accept, contentType=contentType)
@@ -129,7 +129,7 @@ def handler(event, context):
                             if text:
                                 # Append text to the list
                                 text_chunks.append(text)
-    
+
                                 # Wrap text in JSON structure
                                 response_message = json.dumps({"messages": text})
                                 api_gateway_management_api.post_to_connection(
@@ -139,8 +139,8 @@ def handler(event, context):
 
             # Join all text chunks into a single string
             complete_text = ''.join(text_chunks)
-            
-            
+
+
             # Prepare the item to insert into DynamoDB
             item_to_insert = {
                 'email': email,
@@ -157,7 +157,7 @@ def handler(event, context):
             # Add the imageS3Key to the item if it exists
             if image_s3_keys:
                 item_to_insert['imageS3Keys'] = image_s3_keys
-            
+
             if system_prompt:
                 item_to_insert['systemPrompt'] = system_prompt
 
@@ -174,13 +174,13 @@ def handler(event, context):
         except botocore.exceptions.ClientError as error:
             error_message = error.response['Error']['Message']
             print(f"Error: {error_message}")
-    
+
             # Construct an error message
             errorMessage = {
                 'action': 'error',
                 'error': error_message
             }
-    
+
             # Send the error message to the client
             try:
                 api_gateway_management_api.post_to_connection(
@@ -190,7 +190,7 @@ def handler(event, context):
             except botocore.exceptions.ClientError as e:
                 # Handle potential errors in sending the message
                 print(f"Error sending message to client: {str(e)}")
-    
+
             return {
                 'statusCode': 500,
                 'body': f'Error: {error_message}'

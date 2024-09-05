@@ -377,7 +377,7 @@ const Activity = ({ user }) => {
     }
     return '';
   };
-  
+
 
   return (
     <Form layout="vertical" onFinish={handleFormSubmit} onValuesChange={handleInputChange} form={form}>
@@ -453,6 +453,8 @@ const Activity = ({ user }) => {
                   <Option value="anthropic.claude-v2">anthropic.claude-v2</Option>
                   {/* nosemgrep: jsx-not-internationalized */}
                   <Option value="anthropic.claude-instant-v1">anthropic.claude-instant-v1</Option>
+                  {/* nosemgrep: jsx-not-internationalized */}
+                  <Option value="llama3">llama3</Option>
                 </Select>
               </Form.Item>
             </Col>

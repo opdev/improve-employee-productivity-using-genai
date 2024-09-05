@@ -45,7 +45,7 @@ const ChatMessage = ({ text, sender }) => {
         });
     }
   };
-  
+
   const extractTextFromChildren = (children) => {
     if (!children) {
       return '';
@@ -306,7 +306,7 @@ const Chat = ({ user }) => {
       setIsTemplatesLoading(true); // Start loading
       try {
         const authorizationToken = await fetchTokenIfExpired();
-  
+
         // Fetch public templates
         const publicResponse = await fetch(
           `${apiUrl}/templates?visibility=public`,
@@ -318,7 +318,7 @@ const Chat = ({ user }) => {
           }
         );
         const publicTemplates = await publicResponse.json();
-  
+
         // Fetch user-specific templates
         const userResponse = await fetch(
           `${apiUrl}/templates?createdBy=${email}`,
@@ -327,7 +327,7 @@ const Chat = ({ user }) => {
           }
         );
         const userTemplates = await userResponse.json();
-  
+
         // Combine and remove duplicates
         const combinedTemplates = [
           ...publicTemplates,
@@ -335,7 +335,7 @@ const Chat = ({ user }) => {
             (t) => !publicTemplates.some((pt) => pt.templateId === t.templateId)
           ),
         ];
-  
+
         setTemplates(combinedTemplates);
         setFilteredTemplates(combinedTemplates);
       } catch (error) {
@@ -368,7 +368,7 @@ const Chat = ({ user }) => {
     }
   }, [selectedTemplateData]);
 
-  
+
 
   // Function to handle template selection change
   const handleTemplateChange = (templateId) => {
@@ -427,7 +427,7 @@ const Chat = ({ user }) => {
           top_k: topK,
           top_p: topP,
           session_id: sessionIdRef.current,
-          system_prompt: systemPrompt 
+          system_prompt: systemPrompt
         };
 
         wsRef.current.send(JSON.stringify(messagePayload));
@@ -675,7 +675,7 @@ const Chat = ({ user }) => {
                         {/* nosemgrep: jsx-not-internationalized */}
                         <Option value="anthropic.claude-3-5-sonnet-20240620-v1:0">
                           anthropic.claude-3-5-sonnet-20240620-v1:0
-                        </Option>                        
+                        </Option>
                         {/* nosemgrep: jsx-not-internationalized */}
                         <Option value="anthropic.claude-3-opus-20240229-v1:0">
                           anthropic.claude-3-opus-20240229-v1:0
@@ -695,6 +695,10 @@ const Chat = ({ user }) => {
                         {/* nosemgrep: jsx-not-internationalized */}
                         <Option value="anthropic.claude-v1">
                           anthropic.claude-v1
+                        </Option>
+                        {/* nosemgrep: jsx-not-internationalized */}
+                        <Option value="llama3">
+                          llama3
                         </Option>
                       </Select>
                     </Form.Item>

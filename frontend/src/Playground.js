@@ -258,7 +258,7 @@ const Playground = ({ user }) => {
     }
     return '';
   };
-  
+
 
   return (
     <Form layout="vertical" onFinish={handleFormSubmit} form={form}>
@@ -279,6 +279,7 @@ const Playground = ({ user }) => {
           <Option value="anthropic.claude-v2:1">anthropic.claude-v2:1</Option>
           <Option value="anthropic.claude-v2">anthropic.claude-v2</Option>
           <Option value="anthropic.claude-instant-v1">anthropic.claude-instant-v1</Option>
+          <Option value="llama3">llama3</Option>
         </Select>
       </Form.Item>
 
