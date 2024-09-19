@@ -1,10 +1,10 @@
 import json
 import boto3
-import botocore
 import os
 import time
 import base64
 from botocore.exceptions import ClientError
+from langchain_openai import ChatOpenAI
 
 def get_images_from_s3_as_base64(image_keys):
     """Download images from S3 and convert to base64."""
@@ -40,7 +40,7 @@ def handler(event, context):
     # Retrieve optional parameters or set default values
     max_tokens_to_sample = body.get('max_tokens_to_sample', 4000)
     temperature = body.get('temperature', 0)
-    modelId = body.get('modelId', "anthropic.claude-3-haiku-20240307-v1:0")
+    modelId = body.get('modelId', "llama3")  # Use Llama3 model ID
     top_k = body.get('top_k', 250)
     top_p = body.get('top_p', 0.999)
 
@@ -53,29 +53,36 @@ def handler(event, context):
     current_timestamp = str(int(time.time()))
 
     # Retrieves 'system' if provided, else None
-    system_prompt = body.get('system', None)  
+    system_prompt = body.get('system', None)
 
     # Extract image keys from the event body
     image_s3_keys = body.get('imageS3Keys', [])
 
-    # Only attempt to process the image is provided
+    # Only attempt to process the image if provided
     if image_s3_keys:
         # Make sure the list does not exceed 6 items
         image_s3_keys = image_s3_keys[:6]
-        
+
         images_base64 = get_images_from_s3_as_base64(image_s3_keys)
 
-    # Initialize Bedrock client
-    boto3_bedrock = boto3.client('bedrock-runtime')
+    # Initialize the Llama3 model with ChatOpenAI via LangChain
+    chat_model = ChatOpenAI(
+        model_id="llama3",  # Use Llama3 model
+        temperature=temperature,
+        max_tokens=max_tokens_to_sample,
+        top_k=top_k,
+        top_p=top_p,
+        base_url="https://llama3-genai-doc-summarization.apps.osai.openshiftpartnerlabs.com/v1",  # Replace with actual base URL
+        api_key="YOUR_API_KEY"  # Replace with actual API key
+    )
 
-    # Prepare the request for Bedrock
+    # Prepare the request for Llama3
     if action == 'sendmessage':
-
-        # Prepare the request for Bedrock, including the optional image
+        # Prepare the request for the Llama3 model, including the optional image
         messages_content = [
             {
-             "type": "text", 
-             "text": data
+                "type": "text",
+                "text": data
             }
         ]
 
@@ -85,17 +92,16 @@ def handler(event, context):
                     "type": "image",
                     "source": {"type": "base64", "media_type": "image/jpeg", "data": image_base64}
                 })
-    
+
         message = [
             {
-                "role": "user", 
+                "role": "user",
                 "content": messages_content
             }
         ]
-    
-        # Prepare the JSON payload for Bedrock
-        bedrock_request_dict = {
-            "anthropic_version": "bedrock-2023-05-31",
+
+        # Prepare the payload for the Llama3 model
+        llama_request_dict = {
             "messages": message,
             "max_tokens": max_tokens_to_sample,
             "temperature": temperature,
@@ -105,42 +111,21 @@ def handler(event, context):
 
         # Only add 'system' to payload if it was provided
         if system_prompt:
-            bedrock_request_dict["system"] = system_prompt
+            llama_request_dict["system"] = system_prompt
 
-        # Now convert the dictionary to a JSON string
-        bedrock_payload = json.dumps(bedrock_request_dict)
-        
-        accept = "application/json"
-        contentType = "application/json"
-        
-        # Initialize a list to collect text chunks
-        text_chunks = []
-        
-        # Invoke Bedrock model
+        # Invoke the Llama3 model and handle the response
         try:
-            response = boto3_bedrock.invoke_model_with_response_stream(body=bedrock_payload, modelId=modelId, accept=accept, contentType=contentType)
-            stream = response.get('body')
-            if stream:
-                for event in stream:
-                    chunk = json.loads(event["chunk"]["bytes"])
-                    if chunk['type'] == 'content_block_delta':
-                        if chunk['delta']['type'] == 'text_delta':
-                            text = chunk['delta'].get('text', '')
-                            if text:
-                                # Append text to the list
-                                text_chunks.append(text)
-    
-                                # Wrap text in JSON structure
-                                response_message = json.dumps({"messages": text})
-                                api_gateway_management_api.post_to_connection(
-                                    ConnectionId=connection_id,
-                                    Data=response_message
-                                )
+            # Generate a response using the Llama3 model
+            response = chat_model.generate(
+                prompt=json.dumps(llama_request_dict)
+            )
 
-            # Join all text chunks into a single string
-            complete_text = ''.join(text_chunks)
-            
-            
+            # Send the response to the client
+            api_gateway_management_api.post_to_connection(
+                ConnectionId=connection_id,
+                Data=json.dumps({"messages": response})
+            )
+
             # Prepare the item to insert into DynamoDB
             item_to_insert = {
                 'email': email,
@@ -151,46 +136,39 @@ def handler(event, context):
                 'sourceIp': source_ip,
                 'requestBody': json.dumps(body),
                 'userAgent': user_agent,
-                'completion': complete_text
+                'completion': response
             }
 
             # Add the imageS3Key to the item if it exists
             if image_s3_keys:
                 item_to_insert['imageS3Keys'] = image_s3_keys
-            
+
             if system_prompt:
                 item_to_insert['systemPrompt'] = system_prompt
 
             # Insert the data into DynamoDB
-            response = table.put_item(Item=item_to_insert)
+            table.put_item(Item=item_to_insert)
 
-            # After sending all chunks, send the end-of-message signal
-            end_of_message_signal = json.dumps({"endOfMessage": True})
+            # After sending the response, send the end-of-message signal
             api_gateway_management_api.post_to_connection(
                 ConnectionId=connection_id,
-                Data=end_of_message_signal
+                Data=json.dumps({"endOfMessage": True})
             )
 
-        except botocore.exceptions.ClientError as error:
+        except ClientError as error:
             error_message = error.response['Error']['Message']
             print(f"Error: {error_message}")
-    
-            # Construct an error message
+
+            # Send the error message to the client
             errorMessage = {
                 'action': 'error',
                 'error': error_message
             }
-    
-            # Send the error message to the client
-            try:
-                api_gateway_management_api.post_to_connection(
-                    ConnectionId=event['requestContext']['connectionId'],
-                    Data=json.dumps(errorMessage)
-                )
-            except botocore.exceptions.ClientError as e:
-                # Handle potential errors in sending the message
-                print(f"Error sending message to client: {str(e)}")
-    
+            api_gateway_management_api.post_to_connection(
+                ConnectionId=event['requestContext']['connectionId'],
+                Data=json.dumps(errorMessage)
+            )
+
             return {
                 'statusCode': 500,
                 'body': f'Error: {error_message}'

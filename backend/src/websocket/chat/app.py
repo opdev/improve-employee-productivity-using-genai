@@ -1,7 +1,7 @@
 import json
 import boto3
 import os
-from langchain_aws import ChatBedrock
+from langchain_openai import ChatOpenAI  # Replace Bedrock with OpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.messages import HumanMessage
@@ -16,7 +16,7 @@ def get_session_history(session_id, email, table_name, max_length=20, max_words=
 
     response = table.get_item(Key=composite_key)
     messages = response.get('Item', {}).get('History', [])
-    
+
     # Trim history based on constraints
     if len(messages) > max_length:
         messages = messages[-max_length:]
@@ -32,7 +32,7 @@ def get_session_history(session_id, email, table_name, max_length=20, max_words=
             UpdateExpression='SET History = :val',
             ExpressionAttributeValues={':val': messages}
         )
-    
+
     return DynamoDBChatMessageHistory(table_name=table_name, session_id=session_id, key=composite_key)
 
 def handler(event, context):
@@ -50,14 +50,14 @@ def handler(event, context):
     # Parse the incoming message
     body = json.loads(event['body'])
     action = body.get('action')
-    system_prompt = body.get('system_prompt', None)  
+    system_prompt = body.get('system_prompt', None)
     data = body.get('data')
 
     if action == 'chat':
-        # Extract necessary parameters for Langchain Bedrock
+        # Extract necessary parameters
         max_tokens_to_sample = body.get('max_tokens_to_sample', 4000)
         temperature = body.get('temperature', 0)
-        modelId = body.get('modelId', "anthropic.claude-3-haiku-20240307-v1:0")
+        modelId = body.get('modelId', "llama3")  # Replace with Llama3 model
         top_k = body.get('top_k', 250)
         top_p = body.get('top_p', 0.999)
         session_id = body.get('session_id')
@@ -67,15 +67,15 @@ def handler(event, context):
             "Email": email
         }
 
-        # Configure the Bedrock model
-        chat_model = ChatBedrock(
-            model_id=modelId,
-            model_kwargs={
-                "temperature": temperature,
-                "max_tokens": max_tokens_to_sample,
-                "top_k": top_k,
-                "top_p": top_p
-            }
+        # Configure the ChatOpenAI model for Llama3
+        chat_model = ChatOpenAI(
+            model_id="llama3",  # The Llama3 model
+            temperature=temperature,
+            max_tokens=max_tokens_to_sample,
+            top_k=top_k,
+            top_p=top_p,
+            base_url="https://llama3-genai-doc-summarization.apps.osai.openshiftpartnerlabs.com/v1",  # Replace with the actual base URL
+            api_key="YOUR_API_KEY"  # Replace with the actual API key
         )
 
         # Define the chat prompt template for interaction
@@ -95,7 +95,7 @@ def handler(event, context):
                 ]
             )
 
-        # Combine the prompt with the Bedrock chat model and parse the output as a string
+        # Combine the prompt with the Llama3 chat model and parse the output as a string
         chat_chain = prompt | chat_model | StrOutputParser()
 
         composite_key = {
@@ -118,7 +118,7 @@ def handler(event, context):
             for response in chain_with_history.stream(input={"question": data}, config=configuration):
                 formatted_response = json.dumps({'messages': response})
                 api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=formatted_response)
-            
+
             final_response = json.dumps({"endOfMessage": True})
             api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=final_response)
 
