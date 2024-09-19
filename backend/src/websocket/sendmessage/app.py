@@ -40,7 +40,8 @@ def handler(event, context):
     # Retrieve optional parameters or set default values
     max_tokens_to_sample = body.get('max_tokens_to_sample', 4000)
     temperature = body.get('temperature', 0)
-    modelId = body.get('modelId', "anthropic.claude-3-haiku-20240307-v1:0")
+    # modelId = body.get('modelId', "anthropic.claude-3-haiku-20240307-v1:0")
+    modelId = body.get('modelId', "llama3")
     top_k = body.get('top_k', 250)
     top_p = body.get('top_p', 0.999)
 
@@ -65,13 +66,13 @@ def handler(event, context):
 
         images_base64 = get_images_from_s3_as_base64(image_s3_keys)
 
-    # Initialize Bedrock client
-    boto3_bedrock = boto3.client('bedrock-runtime')
+    # Initialize Llama3 client
+    boto3_llama3 = boto3.client('llama3')
 
-    # Prepare the request for Bedrock
+    # Prepare the request for Llama3
     if action == 'sendmessage':
 
-        # Prepare the request for Bedrock, including the optional image
+        # Prepare the request for Llama3, including the optional image
         messages_content = [
             {
              "type": "text",
@@ -93,22 +94,24 @@ def handler(event, context):
             }
         ]
 
-        # Prepare the JSON payload for Bedrock
-        bedrock_request_dict = {
-            "anthropic_version": "bedrock-2023-05-31",
+        # Prepare the JSON payload for Llama3
+        llama3_request_dict = {
+            "model": "llama3",
             "messages": message,
             "max_tokens": max_tokens_to_sample,
             "temperature": temperature,
             "top_k": top_k,
-            "top_p": top_p
+            "top_p": top_p,
+            "base_url": "https://llama3-genai-doc-summarization.apps.osai.openshiftpartnerlabs.com/v1",
+            "api_key": "YOUR_API_KEY",
         }
 
         # Only add 'system' to payload if it was provided
         if system_prompt:
-            bedrock_request_dict["system"] = system_prompt
+            llama3_request_dict["system"] = system_prompt
 
         # Now convert the dictionary to a JSON string
-        bedrock_payload = json.dumps(bedrock_request_dict)
+        llama3_payload = json.dumps(llama3_request_dict)
 
         accept = "application/json"
         contentType = "application/json"
@@ -116,9 +119,9 @@ def handler(event, context):
         # Initialize a list to collect text chunks
         text_chunks = []
 
-        # Invoke Bedrock model
+        # Invoke Llama3 model
         try:
-            response = boto3_bedrock.invoke_model_with_response_stream(body=bedrock_payload, modelId=modelId, accept=accept, contentType=contentType)
+            response = boto3_llama3.invoke_model_with_response_stream(body=llama3_payload, modelId=modelId, accept=accept, contentType=contentType)
             stream = response.get('body')
             if stream:
                 for event in stream:
