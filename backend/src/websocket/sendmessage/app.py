@@ -44,6 +44,10 @@ def handler(event, context):
     top_k = body.get('top_k', 250)
     top_p = body.get('top_p', 0.999)
 
+    # Retrieve environment variables
+    base_url=os.getenv('BASE_URL')
+    api_key=os.getenv('CLUSTER_API_KEY')
+
     # Extract necessary information
     email = event['requestContext']['authorizer']['principalId']
     source_ip = event['requestContext']['identity']['sourceIp']
@@ -72,8 +76,8 @@ def handler(event, context):
         max_tokens=max_tokens_to_sample,
         top_k=top_k,
         top_p=top_p,
-        base_url="https://llama3-genai-doc-summarization.apps.osai.openshiftpartnerlabs.com/v1",  # Replace with actual base URL
-        api_key="YOUR_API_KEY"  # Replace with actual API key
+        base_url=base_url,
+        api_key=api_key,
     )
 
     # Prepare the request for Llama3

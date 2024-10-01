@@ -35,7 +35,7 @@ const Templates = ({user}) => {
         console.error('Error getting user info:', error);
       }
     };
-    
+
     fetchTemplates();
     checkAdminRole();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,11 +48,12 @@ const Templates = ({user}) => {
     { label: 'anthropic.claude-3-opus-20240229-v1:0', value: 'anthropic.claude-3-opus-20240229-v1:0' },
     { label: 'anthropic.claude-v2:1', value: 'anthropic.claude-v2:1' },
     { label: 'anthropic.claude-v2', value: 'anthropic.claude-v2' },
-    { label: 'anthropic.claude-instant-v1', value: 'anthropic.claude-instant-v1' }
+    { label: 'anthropic.claude-instant-v1', value: 'anthropic.claude-instant-v1' },
+    { label: 'llama3', value: 'llama3' }
     // Add more model options here...
   ];
 
-  
+
 
 
 
@@ -60,7 +61,7 @@ const Templates = ({user}) => {
   const fetchTemplates = async () => {
     setIsLoading(true); // Start loading
     try {
-      const authorizationToken = await fetchTokenIfExpired();  
+      const authorizationToken = await fetchTokenIfExpired();
       // Fetch public templates
       const publicResponse = await fetch(`${apiUrl}/templates?visibility=public`, {
         headers: {
@@ -69,17 +70,17 @@ const Templates = ({user}) => {
         }
       });
       const publicTemplates = await publicResponse.json();
-  
+
       // Fetch user-specific templates
       const userResponse = await fetch(`${apiUrl}/templates?createdBy=${email}`, {
         headers: { authorizationToken }
       });
       const userTemplates = await userResponse.json();
-  
+
       // Combine and remove duplicates
       const combinedTemplates = [...publicTemplates, ...userTemplates.filter(t => !publicTemplates.some(pt => pt.templateId === t.templateId))];
       setPromptTemplates(combinedTemplates);
-  
+
     } catch (error) {
       console.error('Error fetching templates:', error);
     } finally {
@@ -94,11 +95,11 @@ const Templates = ({user}) => {
   const handleEditTemplate = (template) => {
     openModal('edit', template);
   };
-  
+
   const handleUpdateTemplate = async (template) => {
     try {
       const authorizationToken = await fetchTokenIfExpired();
-      
+
       const response = await fetch(`${apiUrl}/templates`, {
         method: 'PUT',
         headers: {
@@ -107,7 +108,7 @@ const Templates = ({user}) => {
         },
         body: JSON.stringify(template)
       });
-  
+
       if (response.ok) {
         message.success('Template updated successfully');
         fetchTemplates();  // Refresh the list
@@ -127,19 +128,19 @@ const Templates = ({user}) => {
   const handleDeleteTemplate = async (templateId) => {
     try {
       const authorizationToken = await fetchTokenIfExpired();
-      
+
       const response = await fetch(`${apiUrl}/templates`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'authorizationToken': authorizationToken
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           'templateId': templateId,
           'createdBy': email
          })
       });
-  
+
       if (response.ok) {
         message.success('Template deleted successfully');
         fetchTemplates();  // Refresh the list
@@ -151,7 +152,7 @@ const Templates = ({user}) => {
       message.error('Error deleting template');
     }
   };
-  
+
 
   const handleFormFinish = async (values) => {
     try {
@@ -164,7 +165,7 @@ const Templates = ({user}) => {
       if (!isAdmin) {
         payload.visibility = 'private'; // Force the visibility to private for non-admins
       }
-      
+
       const response = await fetch(`${apiUrl}/templates`, {
         method: 'POST',
         headers: {
@@ -173,7 +174,7 @@ const Templates = ({user}) => {
         },
         body: JSON.stringify(payload)
       });
-  
+
       if (response.ok) {
         message.success('Template added successfully');
         fetchTemplates();  // Refresh the list
@@ -184,11 +185,11 @@ const Templates = ({user}) => {
       console.error('Error creating template:', error);
       message.error('Error creating template');
     }
-  
+
     setIsModalVisible(false);
     form.resetFields();
   };
-  
+
   const handleCloneTemplate = (template) => {
     // Clone the template with modifications
     const clonedTemplate = {
@@ -197,7 +198,7 @@ const Templates = ({user}) => {
       templateName: `${template.templateName} Copy`, // Append 'Copy' to the name
       visibility: 'private', // Set to 'private' for non-admins
     };
-  
+
     // Open the modal in 'add' mode with the cloned template
     setCurrentTemplate(clonedTemplate);
     setModalMode('add');
@@ -215,7 +216,7 @@ const Templates = ({user}) => {
     setCurrentTemplate(template); // Set the current template, if any
     setIsModalVisible(true); // Open the modal
     setIsCloning(false);
-  
+
     // Pre-set form values based on the mode and user role
     let formValues = {};
     if (mode === 'add') {
@@ -226,12 +227,12 @@ const Templates = ({user}) => {
     } else {
       formValues = template;
     }
-  
+
     // If the user is not an admin and we're not viewing, force the visibility to 'private'
     if (!isAdmin && mode !== 'view') {
       formValues.visibility = 'private';
     }
-  
+
     // Set form values to state
     form.setFieldsValue(formValues);
   };
@@ -242,7 +243,7 @@ const Templates = ({user}) => {
     setIsCloning(false);
     form.resetFields(); // Reset form fields
   };
-  
+
   const filteredTemplates = promptTemplates
   .filter(template => {
     const name = template.templateName || ''; // Fallback to empty string if name is undefined
@@ -277,7 +278,7 @@ const Templates = ({user}) => {
   };
 
   return (
-    <div> 
+    <div>
       <div>
         { /* nosemgrep: jsx-not-internationalized */}
         <h1 style={{ marginTop: '-20px' }}>Templates</h1>
@@ -367,7 +368,7 @@ const Templates = ({user}) => {
             <Button key="submit" type="primary" onClick={() => form.submit()}>
               Save
             </Button>,
-            // nosemgrep: jsx-not-internationalized 
+            // nosemgrep: jsx-not-internationalized
             <Button key="back" onClick={closeModal}>
               Cancel
             </Button>
@@ -388,7 +389,7 @@ const Templates = ({user}) => {
           <Form.Item
             name="createdBy"
             label="Created By"
-            hidden={true} 
+            hidden={true}
           />
           <Form.Item
             name="templateName"

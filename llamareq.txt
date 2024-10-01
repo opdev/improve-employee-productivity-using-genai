@@ -1,0 +1,121 @@
+curl https://llama-genai-doc-summarization.apps.osai.openshiftpartnerlabs.com/v1/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -d '{
+            "model": "llama",
+            "max_tokens": 400,
+            "stream": false,
+            "temperature": 0.5,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant."
+                },
+                {
+                    "role": "user",
+                    "content": "What is a hyperbole?"
+                }
+            ],
+            "template": {
+                "format": "role: content\\n",
+                "fields": [
+                    {"role": "system", "prefix": "System: ", "suffix": "\n"},
+                    {"role": "user", "prefix": "User: ", "suffix": "\n"},
+                    {"role": "assistant", "prefix": "Assistant: ", "suffix": "\n"}
+                ]
+            }
+        }' -k
+{"object":"error","message":"[{'type': 'extra_forbidden', 'loc': ('body', 'template'), 'msg': 'Extra inputs are not permitted', 'input': {'format': 'role: content\\\\n', 'fields': [{'role': 'system', 'prefix': 'System: '}, {'role': 'user', 'prefix': 'User: '}, {'role': 'assistant', 'prefix': 'Assistant: '}]}}]","type":"BadRequestError","param":null,"code":400}%
+
+
+curl https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+-d '{"model": "llama3", "prompt": "Give me a 5 sentence story of a dog.", "temperature": 0.2, "max_tokens": 400}' -k
+
+curl https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+-d '{"model": "llama3", "messages": [{"role": "user", "content": "Say this is a test!"}], "temperature": 0.2, "max_tokens": 400}' -k
+
+curl https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/chat/completions \
+-H "Content-Type: application/json" \
+-d '{
+        "model": "llama3",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": "Who won the world series in 2020?"}
+        ]
+    }'
+{"object":"error","message":"As of transformers v4.44, default chat template is no longer allowed, so you must provide a chat template if the tokenizer does not define one.","type":"BadRequestError","param":null,"code":400}%
+
+curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -d '{
+            "model": "llama",
+            "max_tokens": 400,
+            "stream": false,
+            "template": {
+                "format": "role: content",
+                "fields": [
+                    {"role": "system", "prefix": "System:", "suffix": "\n"},
+                    {"role": "user", "prefix": "User:", "suffix": "\n"},
+                    {"role": "assistant", "prefix": "Assistant:", "suffix": "\n"}
+                ]
+            },
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "What is a hyperbole?"}
+            ]
+        }'
+{"object":"error","message":"[{'type': 'missing', 'loc': ('body', 'prompt'), 'msg': 'Field required', 'input': {'model': 'llama', 'messages': [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': 'Hello!'}]}}, {'type': 'extra_forbidden', 'loc': ('body', 'messages'), 'msg': 'Extra inputs are not permitted', 'input': [{'role': 'system', 'content': 'You are a helpful assistant.'}, {'role': 'user', 'content': 'Hello!'}]}]","type":"BadRequestError","param":null,"code":400}%
+
+curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -d '{
+            "model": "llama",
+            "max_tokens": 400,
+            "stream": false,
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "What is a hyperbole?"}
+            ]
+        }'
+{"object":"error","message":"As of transformers v4.44, default chat template is no longer allowed, so you must provide a chat template if the tokenizer does not define one.","type":"BadRequestError","param":null,"code":400}%
+
+curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -d '{
+        "model": "llama",
+        "messages": [{"role": "user", "content": "Say this is a test!"}],
+        "temperature": 0.7
+    }'
+{"object":"error","message":"As of transformers v4.44, default chat template is no longer allowed, so you must provide a chat template if the tokenizer does not define one.","type":"BadRequestError","param":null,"code":400}%
+
+
+curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -d '{
+    "model": "llama",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant."
+      },
+      {
+        "role": "user",
+        "content": "Hello!"
+      }
+    ]
+  }'
+{"object":"error","message":"As of transformers v4.44, default chat template is no longer allowed, so you must provide a chat template if the tokenizer does not define one.","type":"BadRequestError","param":null,"code":400}%
+
+curl -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer sha256~UcTtPPUHW74L55JFWTwcsYiSWAeeg8HZB5vsiDGOUUk" \
+-d '{"model": "llama3", "prompt": "Hello, world!"}'
+Internal Server Error

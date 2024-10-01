@@ -377,7 +377,7 @@ const Activity = ({ user }) => {
     }
     return '';
   };
-  
+
 
   return (
     <Form layout="vertical" onFinish={handleFormSubmit} onValuesChange={handleInputChange} form={form}>
@@ -428,7 +428,7 @@ const Activity = ({ user }) => {
             <Col span={24}>
               <Form.Item label="Model Selection" name="modelId">
                 <Select
-                  defaultValue="anthropic.claude-3-haiku-20240307-v1:0"
+                  defaultValue="llama3"
                   onChange={(value) => {
                     setModelVersion(value);
                     setSelectedModel(value); // Ensure this updates the selectedModel state
@@ -453,6 +453,8 @@ const Activity = ({ user }) => {
                   <Option value="anthropic.claude-v2">anthropic.claude-v2</Option>
                   {/* nosemgrep: jsx-not-internationalized */}
                   <Option value="anthropic.claude-instant-v1">anthropic.claude-instant-v1</Option>
+                  {/* nosemgrep: jsx-not-internationalized */}
+                  <Option value="llama3">llama3</Option>
                 </Select>
               </Form.Item>
             </Col>

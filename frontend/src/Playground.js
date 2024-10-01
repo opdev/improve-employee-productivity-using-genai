@@ -30,7 +30,7 @@ const Playground = ({ user }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const MAX_BYTE_SIZE = 124 * 1024; // 124KB in bytes
   const [inputText, setInputText] = useState(''); // New state for controlling the input text
-  const [selectedModel, setSelectedModel] = useState("anthropic.claude-3-haiku-20240307-v1:0"); // Track selected model
+  const [selectedModel, setSelectedModel] = useState("llama3"); // Track selected model
   const userId = user?.userId; // Assuming the user ID is available here
 
   const [systemMessage, setSystemMessage] = useState(''); // State for storing the system message
@@ -90,7 +90,7 @@ const Playground = ({ user }) => {
       data: values.input,
       max_tokens_to_sample: Number(values.maxTokensToSample) || 4000,
       temperature: Number(temperature) || 0,
-      modelId: values.modelId || "anthropic.claude-3-haiku-20240307-v1:0",
+      modelId: values.modelId || "llama3",
       top_k: Number(topK) || 250,
       top_p: Number(topP) || 0.999,
     };
@@ -258,7 +258,7 @@ const Playground = ({ user }) => {
     }
     return '';
   };
-  
+
 
   return (
     <Form layout="vertical" onFinish={handleFormSubmit} form={form}>
@@ -271,7 +271,7 @@ const Playground = ({ user }) => {
       <br />
 
       <Form.Item label="Model Selection" name="modelId">
-        <Select defaultValue="anthropic.claude-3-haiku-20240307-v1:0" onSelect={handleModelSelect}>
+        <Select defaultValue="llama3" onSelect={handleModelSelect}>
           <Option value="anthropic.claude-3-haiku-20240307-v1:0">anthropic.claude-3-haiku-20240307-v1:0</Option>
           <Option value="anthropic.claude-3-sonnet-20240229-v1:0">anthropic.claude-3-sonnet-20240229-v1:0</Option>
           <Option value="anthropic.claude-3-5-sonnet-20240620-v1:0">anthropic.claude-3-5-sonnet-20240620-v1:0</Option>
@@ -279,6 +279,7 @@ const Playground = ({ user }) => {
           <Option value="anthropic.claude-v2:1">anthropic.claude-v2:1</Option>
           <Option value="anthropic.claude-v2">anthropic.claude-v2</Option>
           <Option value="anthropic.claude-instant-v1">anthropic.claude-instant-v1</Option>
+          <Option value="llama3">llama3</Option>
         </Select>
       </Form.Item>
 
