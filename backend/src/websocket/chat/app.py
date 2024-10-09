@@ -63,6 +63,8 @@ def handler(event, context):
         top_k = body.get('top_k', 250)
         top_p = body.get('top_p', 0.999)
         session_id = body.get('session_id')
+        base_url = os.getenv('BASE_URL') + "/completions"
+        api_key = os.getenv('CLUSTER_API_KEY')
 
         my_key = {
             "SessionId": session_id,
@@ -81,13 +83,13 @@ def handler(event, context):
         # )
 
         chat_model = ChatOpenAI(
-            model_id="llama3",
+            model_id=modelId,
             temperature=temperature,
             max_tokens=max_tokens_to_sample,
             top_k=top_k,
             top_p=top_p,
-            base_url="https://llama3-genai-doc-summarization.apps.osai.openshiftpartnerlabs.com/v1",
-            api_key="YOUR_API_KEY"
+            base_url=base_url,
+            api_key=api_key
         )
 
         # Define the chat prompt template for interaction
