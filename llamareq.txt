@@ -1,6 +1,6 @@
 curl https://llama-genai-doc-summarization.apps.osai.openshiftpartnerlabs.com/v1/completions \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -H "Authorization: Bearer sha256~X2n5aQDFWNR_mms1Be6nKT4REijANmQPgPHWQMT6b4A" \
     -d '{
             "model": "llama",
             "max_tokens": 400,
@@ -30,12 +30,12 @@ curl https://llama-genai-doc-summarization.apps.osai.openshiftpartnerlabs.com/v1
 
 curl https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
 -H "Content-Type: application/json" \
--H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+-H "Authorization: Bearer sha256~X2n5aQDFWNR_mms1Be6nKT4REijANmQPgPHWQMT6b4A" \
 -d '{"model": "llama3", "prompt": "Give me a 5 sentence story of a dog.", "temperature": 0.2, "max_tokens": 400}' -k
 
 curl https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
 -H "Content-Type: application/json" \
--H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+-H "Authorization: Bearer sha256~X2n5aQDFWNR_mms1Be6nKT4REijANmQPgPHWQMT6b4A" \
 -d '{"model": "llama3", "messages": [{"role": "user", "content": "Say this is a test!"}], "temperature": 0.2, "max_tokens": 400}' -k
 
 curl https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/chat/completions \
@@ -51,7 +51,7 @@ curl https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com
 
 curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -H "Authorization: Bearer sha256~X2n5aQDFWNR_mms1Be6nKT4REijANmQPgPHWQMT6b4A" \
     -d '{
             "model": "llama",
             "max_tokens": 400,
@@ -73,9 +73,9 @@ curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpart
 
 curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -H "Authorization: Bearer sha256~X2n5aQDFWNR_mms1Be6nKT4REijANmQPgPHWQMT6b4A" \
     -d '{
-            "model": "llama",
+            "model": "llama3",
             "max_tokens": 400,
             "stream": false,
             "messages": [
@@ -87,9 +87,9 @@ curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpart
 
 curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -H "Authorization: Bearer sha256~X2n5aQDFWNR_mms1Be6nKT4REijANmQPgPHWQMT6b4A" \
     -d '{
-        "model": "llama",
+        "model": "llama3",
         "messages": [{"role": "user", "content": "Say this is a test!"}],
         "temperature": 0.7
     }'
@@ -98,7 +98,7 @@ curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpart
 
 curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer sha256~PUi_1cYDQmNUhDMvy1iw3HYFA25WYwU_KnlhiYZ7KG0" \
+    -H "Authorization: Bearer sha256~X2n5aQDFWNR_mms1Be6nKT4REijANmQPgPHWQMT6b4A" \
     -d '{
     "model": "llama",
     "messages": [
@@ -116,6 +116,6 @@ curl -s -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpart
 
 curl -X POST https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions \
 -H "Content-Type: application/json" \
--H "Authorization: Bearer sha256~UcTtPPUHW74L55JFWTwcsYiSWAeeg8HZB5vsiDGOUUk" \
+-H "Authorization: Bearer sha256~X2n5aQDFWNR_mms1Be6nKT4REijANmQPgPHWQMT6b4A" \
 -d '{"model": "llama3", "prompt": "Hello, world!"}'
 Internal Server Error

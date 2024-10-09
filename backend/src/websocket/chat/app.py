@@ -139,6 +139,7 @@ import json
 import logging
 import boto3
 import os
+import requests
 from openai import OpenAI  # Import OpenAI for direct API usage
 
 # Function to retrieve and trim session history from DynamoDB
@@ -179,55 +180,101 @@ def handler(event, context):
     # Initialize the API Gateway Management API
     api_gateway_management_api = boto3.client('apigatewaymanagementapi', endpoint_url=f'https://{domain_name}/{stage}')
 
-    # Parse the incoming message
+    # # Parse the incoming message
+    # body = json.loads(event['body'])
+    # action = body.get('action')
+    # system_prompt = body.get('system_prompt', None)
+    # data = body.get('data')
+
+    # if action == 'chat':
+    #     # Extract necessary parameters
+    #     max_tokens_to_sample = body.get('max_tokens_to_sample', 400)
+    #     temperature = body.get('temperature', 0.2)
+    #     modelId = body.get('modelId', "llama3")  # Replace with Llama3 model
+    #     session_id = body.get('session_id')
+    #     base_url = os.getenv('BASE_URL') + "/completions"
+    #     api_key = os.getenv('CLUSTER_API_KEY')
+
+    #     # Set up OpenAI client
+    #     openai_client = OpenAI(
+    #         api_key=api_key,
+    #         base_url=base_url
+    #     )
+
+    #     # Prepare messages for the OpenAI API
+    #     messages = []
+    #     if system_prompt:
+    #         messages.append({"role": "system", "content": system_prompt})
+    #     messages.append({"role": "user", "content": data})
+
+    #     logging.info(f"Sending request to OpenAI model: {modelId}")
+
+    #     try:
+    #         # Call OpenAI API for chat completion
+    #         chat_response = openai_client.chat.completions.create(
+    #             model=modelId,
+    #             messages=messages,
+    #             max_tokens=max_tokens_to_sample,
+    #             temperature=temperature,
+    #             request_timeout=10,
+    #         )
+
+    #         # Send the response back
+    #         formatted_response = json.dumps({'messages': chat_response})
+    #         api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=formatted_response)
+
+    #         final_response = json.dumps({"endOfMessage": True})
+    #         api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=final_response)
+
+    #     except Exception as e:
+    #         error_message = json.dumps({'action': 'error', 'error': str(e)})
+    #         api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=error_message)
+    #         return {'statusCode': 500, 'body': error_message}
+
+    #     return {'statusCode': 200, 'body': 'Chat message processed successfully'}
+
+    # Extract information from the event
     body = json.loads(event['body'])
     action = body.get('action')
     system_prompt = body.get('system_prompt', None)
-    data = body.get('data')
+    temperature = body.get('temperature', 0.2)
+    max_tokens = body.get('max_tokens', 400)
+    model = body.get('model', 'llama3')
 
     if action == 'chat':
-        # Extract necessary parameters
-        max_tokens_to_sample = body.get('max_tokens_to_sample', 4000)
-        temperature = body.get('temperature', 0.7)
-        modelId = body.get('modelId', "llama3")  # Replace with Llama3 model
-        session_id = body.get('session_id')
-        base_url = os.getenv('BASE_URL') + "/completion"
-        api_key = os.getenv('CLUSTER_API_KEY')
+        api_key = os.getenv('API_KEY')
+        base_url = "https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1/completions"
 
-        # Set up OpenAI client
-        openai_client = OpenAI(
-            api_key=api_key,
-            base_url=base_url
-        )
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {api_key}'
+        }
 
-        # Prepare messages for the OpenAI API
-        messages = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": data})
-
-        logging.info(f"Sending request to OpenAI model: {modelId}")
+        payload = {
+            "model": model,
+            "prompt": system_prompt,
+            "temperature": temperature,
+            "max_tokens": max_tokens
+        }
 
         try:
-            # Call OpenAI API for chat completion
-            chat_response = openai_client.chat.completions.create(
-                model=modelId,
-                messages=messages,
-                max_tokens=max_tokens_to_sample,
-                temperature=temperature,
-                request_timeout=10,
-            )
+            # Make the API request
+            response = requests.post(base_url, headers=headers, json=payload, verify=False)
+            response.raise_for_status()  # Raise an error if the response status is not 200 OK
 
-            # Send the response back
-            formatted_response = json.dumps({'messages': chat_response})
-            api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=formatted_response)
+            result = response.json()
+            logging.info(f"Response received: {result}")
 
-            final_response = json.dumps({"endOfMessage": True})
-            api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=final_response)
+            return {
+                'statusCode': 200,
+                'body': json.dumps(result)
+            }
 
-        except Exception as e:
-            error_message = json.dumps({'action': 'error', 'error': str(e)})
-            api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=error_message)
-            return {'statusCode': 500, 'body': error_message}
+        except requests.exceptions.RequestException as e:
+            error_message = f"Error making the API request: {str(e)}"
+            logging.error(error_message)
 
-        return {'statusCode': 200, 'body': 'Chat message processed successfully'}
+            return {
+                'statusCode': 500,
+                'body': json.dumps({"error": error_message})
+            }
