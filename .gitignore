@@ -8,6 +8,7 @@ notes.txt
 cognito_user.json
 */cognito_user.json'
 .env.docker
+llamareq.txt
 
 .aws-sam/
 packaged.yaml
