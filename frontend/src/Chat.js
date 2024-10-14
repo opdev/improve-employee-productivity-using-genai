@@ -173,7 +173,7 @@ const Chat = ({ user }) => {
   const [topP, setTopP] = useState(0.999);
   const [maxTokensToSample, setMaxTokensToSample] = useState(4000);
   const [modelVersion, setModelVersion] = useState(
-    "anthropic.claude-3-haiku-20240307-v1:0"
+    "llama3"
   );
   const [isLoading, setIsLoading] = useState(false); // State for button loading
   const [templates, setTemplates] = useState([]);
@@ -232,8 +232,10 @@ const Chat = ({ user }) => {
       };
 
       wsRef.current.onmessage = (event) => {
+        console.log("WebSocket event: ", event);
         try {
           const messageData = JSON.parse(event.data);
+          console.log("WebSocket message received:", messageData);
 
           if (messageData.action === "error") {
             console.error(messageData.error);
@@ -385,7 +387,7 @@ const Chat = ({ user }) => {
     } else {
       setSelectedTemplateData(null);
       // Optionally reset the model to a default value if no template is selected or found
-      setModelVersion("anthropic.claude-3-haiku-20240307-v1:0");
+      setModelVersion("llama3");
     }
   };
 
@@ -429,6 +431,9 @@ const Chat = ({ user }) => {
           session_id: sessionIdRef.current,
           system_prompt: systemPrompt 
         };
+
+        console.log(JSON.stringify(messagePayload))
+        console.log(wsRef.current)
 
         wsRef.current.send(JSON.stringify(messagePayload));
         setIsLoading(true);
@@ -661,9 +666,13 @@ const Chat = ({ user }) => {
                       {/* nosemgrep: jsx-not-internationalized */}
                       <Select
                         onChange={setModelVersion}
-                        defaultValue="anthropic.claude-3-haiku-20240307-v1:0" // Set the initial default value
+                        defaultValue="llama3" // Set the initial default value
                         value={modelVersion}
                       >
+                        {/* nosemgrep: jsx-not-internationalized */}
+                        <Option value="llama3"
+                        >llama3
+                        </Option>
                         {/* nosemgrep: jsx-not-internationalized */}
                         <Option value="anthropic.claude-3-haiku-20240307-v1:0"
                         >anthropic.claude-3-haiku-20240307-v1:0
