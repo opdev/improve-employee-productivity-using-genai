@@ -1,7 +1,7 @@
 import json
 import boto3
 import os
-from langchain_aws import ChatBedrock
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.messages import HumanMessage
@@ -57,7 +57,7 @@ def handler(event, context):
         # Extract necessary parameters for Langchain Bedrock
         max_tokens_to_sample = body.get('max_tokens_to_sample', 4000)
         temperature = body.get('temperature', 0)
-        modelId = body.get('modelId', "anthropic.claude-3-haiku-20240307-v1:0")
+        modelId = body.get('modelId', "llama3")
         top_k = body.get('top_k', 250)
         top_p = body.get('top_p', 0.999)
         session_id = body.get('session_id')
@@ -68,14 +68,24 @@ def handler(event, context):
         }
 
         # Configure the Bedrock model
-        chat_model = ChatBedrock(
-            model_id=modelId,
-            model_kwargs={
-                "temperature": temperature,
-                "max_tokens": max_tokens_to_sample,
-                "top_k": top_k,
-                "top_p": top_p
-            }
+        # chat_model = ChatBedrock(
+        #     model_id=modelId,
+        #     model_kwargs={
+        #         "temperature": temperature,
+        #         "max_tokens": max_tokens_to_sample,
+        #         "top_k": top_k,
+        #         "top_p": top_p
+        #     }
+        # )
+        chat_model = ChatOpenAI(
+           api_key="YOUR_OPENAI_API_KEY",
+            base_url="https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1",
+            model=modelId,
+            temperature=temperature,
+            max_tokens=max_tokens_to_sample,
+            timeout=None,
+            max_retries=1,
+            extra_body={"chat_template": "<|begin_of_text|> {% for message in messages %}{{message['role'] + '\n' + message['content']}}{% endfor %} <|end_of_text|>"}
         )
 
         # Define the chat prompt template for interaction
@@ -84,14 +94,15 @@ def handler(event, context):
                 [
                     ("system", system_prompt),
                     MessagesPlaceholder(variable_name="history"),
-                    ("human", "{question}"),
+                    ("user", "{question}"),
                 ]
             )
         else:
              prompt = ChatPromptTemplate.from_messages(
                 [
+                    ("system", "Do not engage in additional dialogue. Make your answer as concise as possible. You should only be answering one question at a time."),
                     MessagesPlaceholder(variable_name="history"),
-                    ("human", "{question}"),
+                    ("user", "{question}"),
                 ]
             )
 
