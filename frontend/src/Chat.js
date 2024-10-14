@@ -234,7 +234,7 @@ const Chat = ({ user }) => {
       wsRef.current.onmessage = (event) => {
         try {
           const messageData = JSON.parse(event.data);
-          console.log("messageData", messageData)
+          console.log("messageData", messageData, "action", messageData.action)
           if (messageData.action === "error") {
             console.log("1st if")
             console.error(messageData.error);
@@ -250,7 +250,6 @@ const Chat = ({ user }) => {
           }
 
           if (messageData.messages) {
-            console.log("2nd if - messages", messageData.messages)
             if (ongoingBotMessageId.current === null) {
               // Start a new bot message and stop showing the loading spin
               setIsWaitingForMessage(false);
@@ -268,7 +267,6 @@ const Chat = ({ user }) => {
               ongoingBotMessageId.current = newMessageId;
             } else {
               // Update the ongoing bot message with new chunks
-              console.log("1st else")
               setMessages((prevMessages) =>
                 prevMessages.map((msg) =>
                   msg.id === ongoingBotMessageId.current
@@ -280,17 +278,14 @@ const Chat = ({ user }) => {
           }
 
           if (messageData.endOfMessage) {
-            console.log("3rd if")
             ongoingBotMessageId.current = null; // Reset for the next bot message
             setIsLoading(false);
           }
         } catch (error) {
-          console.log("1st catch")
           console.error("Error processing WebSocket message:", error);
         }
       };
     } catch (error) {
-      console.log("2nd catch")
       console.error("Error initializing WebSocket:", error);
       message.error("Error connecting to WebSocket");
     }
@@ -396,6 +391,7 @@ const Chat = ({ user }) => {
   };
 
   const handleSend = () => {
+    console.log("sending", inputValue)
     if (inputValue.trim()) {
       // Check if WebSocket is connected
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
@@ -423,7 +419,7 @@ const Chat = ({ user }) => {
           { id: newMessageId, text: displayMessage, sender: "user" },
           { id: thinkingMessageId, text: <Spin />, sender: "bot" }, // Add the temporary thinking message
         ]);
-
+        console.log(sendData)
         const messagePayload = {
           action: "chat",
           data: sendData, // Use inputValue as the prompt data
@@ -435,8 +431,9 @@ const Chat = ({ user }) => {
           session_id: sessionIdRef.current,
           system_prompt: systemPrompt
         };
-
+        console.log(JSON.stringify(messagePayload))
         wsRef.current.send(JSON.stringify(messagePayload));
+        console.log("payload", messagePayload)
         setIsLoading(true);
 
         setInputValue("");
