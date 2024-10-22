@@ -16,7 +16,7 @@ def get_session_history(session_id, email, table_name, max_length=20, max_words=
 
     response = table.get_item(Key=composite_key)
     messages = response.get('Item', {}).get('History', [])
-    
+
     # Trim history based on constraints
     if len(messages) > max_length:
         messages = messages[-max_length:]
@@ -32,7 +32,7 @@ def get_session_history(session_id, email, table_name, max_length=20, max_words=
             UpdateExpression='SET History = :val',
             ExpressionAttributeValues={':val': messages}
         )
-    
+
     return DynamoDBChatMessageHistory(table_name=table_name, session_id=session_id, key=composite_key)
 
 def handler(event, context):
@@ -50,13 +50,13 @@ def handler(event, context):
     # Parse the incoming message
     body = json.loads(event['body'])
     action = body.get('action')
-    system_prompt = body.get('system_prompt', None)  
+    system_prompt = body.get('system_prompt', None)
     data = body.get('data')
 
     if action == 'chat':
         # Extract necessary parameters for Langchain Bedrock
         max_tokens_to_sample = body.get('max_tokens_to_sample', 4000)
-        temperature = body.get('temperature', 0)
+        temperature = body.get('temperature', 0.2)
         modelId = body.get('modelId', "llama3")
         top_k = body.get('top_k', 250)
         top_p = body.get('top_p', 0.999)
@@ -78,14 +78,20 @@ def handler(event, context):
         #     }
         # )
         chat_model = ChatOpenAI(
-           api_key="YOUR_OPENAI_API_KEY",
+            api_key="YOUR_OPENAI_API_KEY",
             base_url="https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1",
             model=modelId,
             temperature=temperature,
             max_tokens=max_tokens_to_sample,
             timeout=None,
             max_retries=1,
-            extra_body={"chat_template": "<|begin_of_text|> {% for message in messages %}{{message['role'] + '\n' + message['content']}}{% endfor %} <|end_of_text|>"}
+            extra_body = {
+                # "chat_template": "{% for message in messages %}{{message['role']}}: {{message['content']}}\n{% endfor %} <|endoftext|>",
+                "chat_template": "{{messages[-1]['role']}}: {{messages[-1]['content']}}\n <|endoftext|>",
+                # "chat_template": "<|begin_of_text|> {% for message in messages if message['role'] == 'system' %}{{message['content']}}{% endfor %} <|endoftext|>",
+                # "chat_template": "<|begin_of_text|> {% for message in messages %}{% if message['role'] == 'system' %}{{message['content']}}{% else %}{{message['role']}}: {{message['content']}}\n{% endif %}{% endfor %} <|endoftext|>",
+                "stop": ["<|endoftext|>"],
+            }
         )
 
         # Define the chat prompt template for interaction
@@ -129,7 +135,7 @@ def handler(event, context):
             for response in chain_with_history.stream(input={"question": data}, config=configuration):
                 formatted_response = json.dumps({'messages': response})
                 api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=formatted_response)
-            
+
             final_response = json.dumps({"endOfMessage": True})
             api_gateway_management_api.post_to_connection(ConnectionId=connection_id, Data=final_response)
 
