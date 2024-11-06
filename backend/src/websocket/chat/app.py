@@ -7,6 +7,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.messages import HumanMessage
 from langchain_community.chat_message_histories import DynamoDBChatMessageHistory
 from langchain_core.output_parsers import StrOutputParser
+from pydantic import BaseModel
 
 # Function to retrieve and trim session history from DynamoDB
 def get_session_history(session_id, email, table_name, max_length=20, max_words=50000):
@@ -67,6 +68,13 @@ def handler(event, context):
             "Email": email
         }
 
+        # class AnswerQuestion(BaseModel):
+        #     output: str
+
+        # class AnswerFormat(BaseModel):
+        #     question: str
+        #     answer: str
+
         # Configure the Bedrock model
         # chat_model = ChatBedrock(
         #     model_id=modelId,
@@ -86,11 +94,15 @@ def handler(event, context):
             timeout=None,
             max_retries=1,
             extra_body = {
-                # "chat_template": "{% for message in messages %}{{message['role']}}: {{message['content']}}\n{% endfor %} <|endoftext|>",
-                "chat_template": "{{messages[-1]['role']}}: {{messages[-1]['content']}}\n <|endoftext|>",
+                "chat_template": "<|begin_of_text|> {% for message in messages %}{{message['role'] + '\n' + message['content']}}{% endfor %} <|end_of_text|>",
+                # "chat_template": "{% for message in messages %}{{message['role'] + '\n' + message['content']}}{% endfor %} <|end_of_text|>",
+                # "chat_template": "{% for message in messages %}{{message['role']}}: {{message['content']}}\n{% endfor %}",
+                # "chat_template": "{{messages[-1]['role']}}: {{messages[-1]['content']}}\n <|endoftext|>", # wrong answer to prompt -- "role: prompt" (Ex. user: How is butter made?)
+                # "chat_template": "{% for message in messages %}{{message['content']}}\n{% endfor %} <|endoftext|>", # loops consistently
                 # "chat_template": "<|begin_of_text|> {% for message in messages if message['role'] == 'system' %}{{message['content']}}{% endfor %} <|endoftext|>",
                 # "chat_template": "<|begin_of_text|> {% for message in messages %}{% if message['role'] == 'system' %}{{message['content']}}{% else %}{{message['role']}}: {{message['content']}}\n{% endif %}{% endfor %} <|endoftext|>",
-                "stop": ["<|endoftext|>"],
+                # "stop": ["<|endoftext|>"],
+                # "guided_json": AnswerFormat.model_json_schema(),
             }
         )
 
