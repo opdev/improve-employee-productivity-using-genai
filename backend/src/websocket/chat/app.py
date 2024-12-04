@@ -57,7 +57,7 @@ def handler(event, context):
     if action == 'chat':
         # Extract necessary parameters for Langchain Bedrock
         max_tokens_to_sample = body.get('max_tokens_to_sample', 4000)
-        temperature = body.get('temperature', 0.2)
+        temperature = body.get('temperature', 0.01)
         modelId = body.get('modelId', "llama3")
         top_k = body.get('top_k', 250)
         top_p = body.get('top_p', 0.999)
@@ -68,42 +68,15 @@ def handler(event, context):
             "Email": email
         }
 
-        # class AnswerQuestion(BaseModel):
-        #     output: str
+        system_msg = "Do not engage in additional dialog. Make your answer as concise as possible. You should only be answering one question at a time. "
+        human_msg = "{question}"
 
-        # class AnswerFormat(BaseModel):
-        #     question: str
-        #     answer: str
-
-        # Configure the Bedrock model
-        # chat_model = ChatBedrock(
-        #     model_id=modelId,
-        #     model_kwargs={
-        #         "temperature": temperature,
-        #         "max_tokens": max_tokens_to_sample,
-        #         "top_k": top_k,
-        #         "top_p": top_p
-        #     }
-        # )
+        # Configure the ChatOpenAI model
         chat_model = ChatOpenAI(
-            api_key="YOUR_OPENAI_API_KEY",
-            base_url="https://llama3-aws-employee-productivity.apps.osai.openshiftpartnerlabs.com/v1",
-            model=modelId,
-            temperature=temperature,
-            max_tokens=max_tokens_to_sample,
-            timeout=None,
-            max_retries=1,
-            extra_body = {
-                "chat_template": "<|begin_of_text|> {% for message in messages %}{{message['role'] + '\n' + message['content']}}{% endfor %} <|end_of_text|>",
-                # "chat_template": "{% for message in messages %}{{message['role'] + '\n' + message['content']}}{% endfor %} <|end_of_text|>",
-                # "chat_template": "{% for message in messages %}{{message['role']}}: {{message['content']}}\n{% endfor %}",
-                # "chat_template": "{{messages[-1]['role']}}: {{messages[-1]['content']}}\n <|endoftext|>", # wrong answer to prompt -- "role: prompt" (Ex. user: How is butter made?)
-                # "chat_template": "{% for message in messages %}{{message['content']}}\n{% endfor %} <|endoftext|>", # loops consistently
-                # "chat_template": "<|begin_of_text|> {% for message in messages if message['role'] == 'system' %}{{message['content']}}{% endfor %} <|endoftext|>",
-                # "chat_template": "<|begin_of_text|> {% for message in messages %}{% if message['role'] == 'system' %}{{message['content']}}{% else %}{{message['role']}}: {{message['content']}}\n{% endif %}{% endfor %} <|endoftext|>",
-                # "stop": ["<|endoftext|>"],
-                # "guided_json": AnswerFormat.model_json_schema(),
-            }
+            model = "llama3",
+            temperature = "0.1",
+            base_url = "https://llama3-manna-aws.apps.osai.openshiftpartnerlabs.com/v1",
+            api_key = "DUMMY",
         )
 
         # Define the chat prompt template for interaction
@@ -112,17 +85,18 @@ def handler(event, context):
                 [
                     ("system", system_prompt),
                     MessagesPlaceholder(variable_name="history"),
-                    ("user", "{question}"),
+                    ("user", human_msg),
                 ]
             )
         else:
              prompt = ChatPromptTemplate.from_messages(
                 [
-                    ("system", "Do not engage in additional dialogue. Make your answer as concise as possible. You should only be answering one question at a time."),
+                    ("system", system_msg),
                     MessagesPlaceholder(variable_name="history"),
-                    ("user", "{question}"),
+                    ("user", human_msg),
                 ]
             )
+
 
         # Combine the prompt with the Bedrock chat model and parse the output as a string
         chat_chain = prompt | chat_model | StrOutputParser()
