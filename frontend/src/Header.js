@@ -36,63 +36,63 @@ const AppHeader = ({user}) => {
   }, []);
 
   const menuItemsMobile = [
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: <Link to="/playground">Playground</Link>,
+    //   key: '/playground',
+    // },
     {
-      // nosemgrep: jsx-not-internationalized 
-      label: <Link to="/playground">Playground</Link>,
-      key: '/playground',
-    },
-    {
-      // nosemgrep: jsx-not-internationalized 
+      // nosemgrep: jsx-not-internationalized
       label: <Link to="/chat">Chat</Link>,
       key: '/chat',
     },
-    {
-      // nosemgrep: jsx-not-internationalized 
-      label: <Link to="/activity">Activity</Link>,
-      key: '/activity',
-    },
-    {
-      // nosemgrep: jsx-not-internationalized 
-      label: <Link to="/history">History</Link>,
-      key: '/history',
-    },
-    {
-      // nosemgrep: jsx-not-internationalized 
-      label: <Link to="/templates">Templates</Link>,
-      key: '/templates',
-    },
-    {
-      // nosemgrep: jsx-not-internationalized 
-      label: (<Button type="text" style={{ color: '#ffffffa6' }} onClick={signOutCall}>Sign Out</Button>)
-    }
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: <Link to="/activity">Activity</Link>,
+    //   key: '/activity',
+    // },
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: <Link to="/history">History</Link>,
+    //   key: '/history',
+    // },
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: <Link to="/templates">Templates</Link>,
+    //   key: '/templates',
+    // },
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: (<Button type="text" style={{ color: '#ffffffa6' }} onClick={signOutCall}>Sign Out</Button>)
+    // }
   ];
 
   const menuItems = [
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: <Link to="/playground">Playground</Link>,
+    //   key: '/playground',
+    // },
     {
-      // nosemgrep: jsx-not-internationalized 
-      label: <Link to="/playground">Playground</Link>,
-      key: '/playground',
-    },
-    {
-      // nosemgrep: jsx-not-internationalized 
+      // nosemgrep: jsx-not-internationalized
       label: <Link to="/chat">Chat</Link>,
       key: '/chat',
     },
-    {
-      // nosemgrep: jsx-not-internationalized 
-      label: <Link to="/activity">Activity</Link>,
-      key: '/activity',
-    },
-    {
-      // nosemgrep: jsx-not-internationalized 
-      label: <Link to="/history">History</Link>,
-      key: '/history',
-    },
-    {
-      // nosemgrep: jsx-not-internationalized 
-      label: <Link to="/templates">Templates</Link>,
-      key: '/templates',
-    },
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: <Link to="/activity">Activity</Link>,
+    //   key: '/activity',
+    // },
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: <Link to="/history">History</Link>,
+    //   key: '/history',
+    // },
+    // {
+    //   // nosemgrep: jsx-not-internationalized
+    //   label: <Link to="/templates">Templates</Link>,
+    //   key: '/templates',
+    // },
   ];
 
   // Set the selected key based on the current route
@@ -101,7 +101,7 @@ const AppHeader = ({user}) => {
   return (
     <Header className="header" style={{ display: 'flex', alignItems: 'center', padding: '0 60px', justifyContent: 'space-between' }}>
     <div className="logo" style={{ flex: 'none' }}>
-      <Link to="/playground" style={{ display: 'flex', alignItems: 'center', color: 'white' }}>
+      <Link to="/chat" style={{ display: 'flex', alignItems: 'center', color: 'white' }}>
        {/* nosemgrep: jsx-not-internationalized */}
       <span className="logo-text">
         {/* nosemgrep: jsx-not-internationalized */}
@@ -154,8 +154,8 @@ const AppHeader = ({user}) => {
         Sign Out
       </Button>
     </>
-    
-    
+
+
     )}
     </Header>
 );

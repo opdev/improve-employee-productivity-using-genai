@@ -1,7 +1,7 @@
-# Employee Productivity GenAI Assistant Example 🌌
+# Employee Productivity GenAI Assistant Demo 🌌
 
 ## Table of Contents
-1. [Summary](#summary-) 
+1. [Summary](#summary-)
 2. [Architecture Diagram](#architecture-diagram-%EF%B8%8F)
 3. [Folder Structure](#folder-structure-)
 4. [Pre-requisites](#pre-requisites-%EF%B8%8F)
@@ -9,12 +9,6 @@
 6. [How to Deploy via AWS CloudShell](#how-to-deploy-via-aws-cloudshell-%EF%B8%8F)
 7. [How to Deploy via AWS Cloud9](#how-to-deploy-via-aws-cloud9-%EF%B8%8F)
 8. [Post Deployment Steps](#post-deployment-steps-%EF%B8%8F)
-9. [Tool Demo (GIFs)](#employee-productivity-genai-assistant-example-demo-gifs-)
-10. [Cost Estimation](#cost-estimation-)
-11. [Acknowledgements](#acknowledgements-)
-12. [License](#license-)
-13. [Contributing](#contributing-)
-14. [Key Considerations](#key-considerations-)
 
 ## Summary 📝
 
@@ -50,7 +44,7 @@ improve-employee-productivity-using-genai/
 ├── backend/ - Contains all backend related files.
 │ ├── artifacts/ - Artifacts such as screenshots
 │ ├── src/ - Source code for Lambda functions.
-│ ├── utils/ - Utility scripts such as helper to create Cognito users  
+│ ├── utils/ - Utility scripts such as helper to create Cognito users
 │ ├── layer/ - Code for Lambda layers.
 │ └── template.yaml - Main SAM template for Infrastructure as Code (IaC) deployment.
 │
@@ -71,11 +65,11 @@ Before you begin with the deployment and development of Employee Productivity Ge
 - **Miniconda**: Requred for isolated envionments on MAC, helpful when using multiple python versions. [Download Here] (https://docs.anaconda.com/free/miniconda/)
 - **AWS CLI 2.x**: Installed and authenticated. [Follow these instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for installation and setup.
 - **AWS SAM CLI**: Required for deploying serverless applications. [Install the SAM CLI here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html).
-- **Linux Environment with Bash**: 
-  - If you are using Windows, you will need to install the Windows Subsystem for Linux (WSL) [Instructions for WSL installation](https://learn.microsoft.com/en-us/windows/wsl/install). 
-  - If you don't want to install WSL, please use the [How to Deploy With Docker (Simplified Local Dependencies)](#how-to-deploy-with-docker-simplified-local-dependencies-) section to deploy using Docker for simplified dependencies. 
+- **Linux Environment with Bash**:
+  - If you are using Windows, you will need to install the Windows Subsystem for Linux (WSL) [Instructions for WSL installation](https://learn.microsoft.com/en-us/windows/wsl/install).
+  - If you don't want to install WSL, please use the [How to Deploy With Docker (Simplified Local Dependencies)](#how-to-deploy-with-docker-simplified-local-dependencies-) section to deploy using Docker for simplified dependencies.
 - **NodeJS**: Version 16 or newer. NodeJS is essential for running the frontend. [Install NodeJS from here](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs).
-- **Python3**: Python 3.11 or new. And make sure you have `pip` installed and working 
+- **Python3**: Python 3.11 or new. And make sure you have `pip` installed and working
 - **jq**: jq is a lightweight and flexible command-line JSON processor, [Install jq from here](https://jqlang.github.io/jq/download/)
 - **Bedrock Model Access for Claude Models**: Please make sure to enable ALL Claude models in the Amazon Bedrock console within the AWS region you plan to deploy Employee Productivity GenAI Assistant Example. Here's the AWS documentation about [Amazon Bedrock Model Access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html)
 
@@ -83,7 +77,7 @@ Please ensure these are installed and properly configured before proceeding with
 
 ## How to Deploy Locally 🚀
 
-> :warning: **Important**: Before proceeding with the deployment, make sure you have completed all the [Pre-requisites](#pre-requisites-%EF%B8%8F). 
+> :warning: **Important**: Before proceeding with the deployment, make sure you have completed all the [Pre-requisites](#pre-requisites-%EF%B8%8F).
 
 Deployment of Employee Productivity GenAI Assistant Example involves executing a bash script that handles the setup of both the backend and frontend. Below are the detailed steps that the script performs:
 
@@ -116,7 +110,7 @@ For some details on what the script does, see below:
 5. **Backend Deployment (if `--backend` is specified)**:
    - Installs dependencies for Lambda layers.
    - Builds the SAM template using:
-     - Standard build: `sam build --template "$SAM_TEMPLATE" --parallel --cached` 
+     - Standard build: `sam build --template "$SAM_TEMPLATE" --parallel --cached`
      - Docker container build, if `--container` is specified the `./deploy.sh` it'll trigger to run the SAM like: `sam build --template "$SAM_TEMPLATE" --parallel --cached --use-container`
          - This option is beneficial when working with dependencies that require specific versions or system binaries, ensuring compatibility and ease of build without modifying your local environment.
 6. **Frontend Deployment (if `--frontend` is specified)**:
@@ -127,7 +121,7 @@ For some details on what the script does, see below:
    - Invalidates the CloudFront distribution cache to ensure the latest version of the site is served.
 7. **Completion**:
    - The script ends with a success message, URLs for user registration (Cognito), and the application access link (CloudFront).
-  
+
 ## How to Deploy via AWS CloudShell ☁️
 
 [AWS CloudShell](https://aws.amazon.com/cloudshell/) allows you to have a free, and instant Linux environment acessible from within your AWS console. To install the solution using AWS CloudShell, please follow the steps below in order.
@@ -138,10 +132,10 @@ For some details on what the script does, see below:
    ```sh
    # Install Development Tools
    sudo yum groupinstall "Development Tools" -y && \
-   
+
    # Install necessary libraries
    sudo yum install openssl-devel bzip2-devel libffi-devel zlib-devel xz-devel ncurses-devel readline-devel sqlite-devel -y
-   
+
    ```
 
 2. **Installing Python 3.11 with PyEnv**:
@@ -160,10 +154,10 @@ For some details on what the script does, see below:
 
    # Reinitialize your Shell
    source ~/.bash_profile
-   
+
    # Install Python 3.11
    pyenv install 3.11
-   
+
    # Set Python 3.11 as default with PyEnv
    pyenv global 3.11
    ```
@@ -174,7 +168,7 @@ For some details on what the script does, see below:
    ```sh
    # Folder creation
    sudo mkdir /aws-samples && \
-   
+
    # Setting folder permissions
    sudo chown cloudshell-user -R /aws-samples
    ```
@@ -198,24 +192,24 @@ For some details on what the script does, see below:
 
 5. **Deploy the Backend of the solution**:
    Now that we have all the dependecies to deploy our application we can deploy the backend of our solution by using the command below. We are using the deployment option for backend and then frontend because Cloudshell does not have enough memory to keep deploy both in the same command. Please change the region and e-mail before running the command below.
-   
+
    ```sh
    # Run the deployment command for the backend
    ./deploy.sh --backend --region=your-aws-region --email=your-email
    ```
 
 6. **Deploy the Frontend of the solution**:
-   Finally the last thing remaining is to deploy the Frontend of the solution. Please use the same region and e-mail as you've ran in the Backend command above. 
+   Finally the last thing remaining is to deploy the Frontend of the solution. Please use the same region and e-mail as you've ran in the Backend command above.
 
-   ```sh 
+   ```sh
    # Run the deployment command for the frontend
    ./deploy.sh --frontend --region=your-aws-region --email=your-email
    ```
 
-   The deployment can take anywhere from 15-30 mins, please be aware that if you don't interact with AWS CloudShell for more than 20 minutes, your CloudShell environment will be deleted. It's recommended that you have a second CloudShell tab open and you run some commands once every 10 mins to avoid the automatically shutdown. 
+   The deployment can take anywhere from 15-30 mins, please be aware that if you don't interact with AWS CloudShell for more than 20 minutes, your CloudShell environment will be deleted. It's recommended that you have a second CloudShell tab open and you run some commands once every 10 mins to avoid the automatically shutdown.
 
-   > **Note**: If this command fails due to CloudShell out of memory, please just re-run the `--frontend` command again and it should work. 
-   
+   > **Note**: If this command fails due to CloudShell out of memory, please just re-run the `--frontend` command again and it should work.
+
    Once the deployment has completed, you'll be displayed with the CloudFront URL, username and temporary password to access the solution. Please check the [Post Deployment section](#post-deployment-steps-%EF%B8%8F)
 
 
@@ -224,7 +218,7 @@ For some details on what the script does, see below:
 Deploying the Employee Productivity GenAI Assistant Example using AWS Cloud9 provides a streamlined and consistent development environment setup. Follow these detailed steps to set up your Cloud9 environment and deploy the application efficiently.
 
 **Note: EBS Volume is autoresized**:
-   - The default EBS volume size is insufficient for some deployments and is increased as part of the deploy.sh script. This script will resize the Cloud9 EBS disk size to be able to acomodate the deployment of this solution. 
+   - The default EBS volume size is insufficient for some deployments and is increased as part of the deploy.sh script. This script will resize the Cloud9 EBS disk size to be able to acomodate the deployment of this solution.
 
 ### Step 1: Create a New Cloud9 Instance
 
@@ -304,7 +298,7 @@ After successfully deploying Employee Productivity GenAI Assistant Example, sinc
 4. **Create Additional Users (Optional)**:
    - If you need to create more users:
      - Go to the **Cognito User Pool** in your AWS console for the region you have chosen.
-     - In the **User pools** select the `EmployeeProductivityGenAIAssistantExample`  User pool. 
+     - In the **User pools** select the `EmployeeProductivityGenAIAssistantExample`  User pool.
      - In the AWS Cognito console, select **Users and groups** from the sidebar.
      - Click **Create user** to add more users. Ensure that the email is verified, and set a temporary password for each new user.
 
@@ -351,112 +345,4 @@ Explore the capabilities of Employee Productivity GenAI Assistant Example with t
 
 
 These tools are designed to boost your productivity and creativity by streamlining your interaction with AI models in a serverless environment.
-
-# Cost Estimation 💰
-
-The cost of running the Employee Productivity GenAI Assistant Example can vary based on your usage patterns and the specific Amazon Bedrock models you choose to utilize. To provide a rough estimate, we've created a cost estimator link that considers a scenario with 50 users, each utilizing the tool 5 times a day with an average of 500 input tokens and 200 output tokens.
-
-## Estimated Monthly Cost
-
-The estimated monthly cost is based on the following assumptions:
-
-- **Users**: 50 users
-- **Usage**: Each user utilizes the tool 5 times a day (150 times per month)
-- **Input Tokens**: Average of 500 input tokens per usage (75K tokens per month per user)
-- **Output Tokens**: Average of 200 output tokens per usage (30K tokens per month per user)
-
-### Total Monthly Token Usage
-
-- **Input Tokens**: 7.5M 
-  - 500 tokens per request * 5 requests per day * 50 users * 30 days = 3.75M tokens
-- **Output Tokens**: 1.5M
-  - 200 tokens per request * 5 requests day * 50 users * 30 days = 1.5M tokens
-
-### Estimated Costs
-
-Bedrock Pricing can be seen in the [AWS Bedrock Pricing page](https://aws.amazon.com/bedrock/pricing/). The estimated costs for the given scenario are as follows:
-
-- **Claude 3 Haiku Model**:
-  - Bedrock: $2.8125
-  - Other AWS Services: $16.51
-  - **Total**: $19.32
-
-- **Claude 3 Sonnet Model**:
-  - Bedrock: $33.75
-  - Other AWS Services: $16.51
-  - **Total**: $50.26
-
-- **Claude 3.5 Sonnet Model**:
-  - Bedrock: $33.75
-  - Other AWS Services: $16.51
-  - **Total**: $50.26
-
-- **Claude 3 Opus Model**:
-  - Bedrock: $168.75
-  - Other AWS Services: $16.51
-  - **Total**: $185.26
-
-> **Notes**: While the cost estimates are calculated using a single model, you have the flexibility to switch between models as needed. For example, if you require a more advanced model like Opus for a specific request, you'll only be charged for that usage. For most requests, you can utilize more cost-optimized models like Haiku, which will help keep the overall cost of the tool lower and optimized for your needs.
-
-> **Note**: The estimate does not consider the AWS Free Tier for eligible services. Your actual costs may be lower if you are still within the Free Tier limits. Please also note that the pricing for AWS services may change over time, so the actual costs may vary from these estimates.
-
-It's important to note that this is just an estimate and does not represent the exact cost. The purpose is to provide a high-level idea of the potential cost based on the given scenario. The actual cost will vary depending on your specific usage patterns and the Amazon Bedrock models you choose to utilize.
-
-One of the great advantages of the cloud and serverless architecture is the ability to scale resources up or down based on demand. As a result, the cost of the solution will increase or decrease accordingly, ensuring you only pay for the resources you consume.
-
-Additionally, some components of the solution, such as AWS Lambda, S3, CloudFront, DynamoDB and Amazon Cognito, may not incur additional costs if you are still within the AWS Free Tier limits.
-
-**Cost Estimator Link**: https://calculator.aws/#/estimate?id=5fa739dd54db78d439bb602e17bd8af8a1d78f07
-
-> **Note**: The cost estimator does not include the charges for Amazon Bedrock, as the Claude models are not yet supported in the calculator.
-
-
-## Acknowledgements 🚀
-
-- **Project Founder, Lead Developer/Architect, and Maintainer:** [Samuel Baruffi](https://www.linkedin.com/in/samuelbaruffi/)
-
-
-## License 📜
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributing 🤝
-
-We welcome contributions to Employee Productivity GenAI Assistant Example! If you have suggestions or want to report issues, feel free to open a pull request or issue.
-
-## Key Considerations 🌐
-
-When implementing solutions, it's essential to follow best practices to ensure security, reliability, and observability. Below are some recommendations, but note that this list is non-exhaustive and there could be more to consider.
-
-### Encryption with Customer Managed Key (CMK)
-
-To enhance data security, consider enabling encryption using a Customer Managed Key (CMK) stored in AWS Key Management Service (KMS) for various services. This provides an additional layer of security by allowing you to control access to the encryption keys.
-
-- **DynamoDB**: Use CMK for encrypting data at rest.
-  - **Documentation**: [DynamoDB Encryption with CMK](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/encryption.howitworks.html#managed-key-customer-managed)
-- **Lambda Environment Variables**: Encrypt environment variables in transit using CMK.
-  - **Documentation**: [Lambda Environment Variables Encryption](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-encryption)
-
-### Observability and Logging
-
-Implementing robust observability and logging mechanisms is crucial for monitoring, troubleshooting, and security auditing.
-
-- **S3 Access Logs**: Enable server access logging to monitor requests made to your buckets.
-  - **Documentation**: [Enable Server Access Logging for S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html)
-- **API Gateway Access Logs**: Define the `AccessLogSetting` property to log access requests.
-  - **Documentation**: [Set Up API Gateway Logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html)
-- **CloudFront Access Logs**: Enable access logging to get detailed information about each request.
-  - **Documentation**: [Enable CloudFront Access Logs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html)
-- **AWS X-Ray Tracing**: Enable X-Ray tracing for your API Gateway to trace and analyze requests.
-  - **Documentation**: [Enable API Gateway X-Ray Tracing](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enabling-xray.html)
-- **DLQ for Lambda**: Utilize Dead Letter Queues (DLQ) to capture and analyze failed Lambda calls.
-
-### Lambda in VPC and VPC Endpoints
-
-For Lambda functions running in a Virtual Private Cloud (VPC), ensure proper configuration of VPC endpoints to facilitate secure and efficient communication. This can help keep all calls internal to the VPC and avoid using AWS public endpoints.
-
-- **Lambda VPC Configuration**: [Lambda VPC Configuration](https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html)
-- **VPC Endpoints**: [What are VPC Endpoints](https://docs.aws.amazon.com/whitepapers/latest/aws-privatelink/what-are-vpc-endpoints.html)
-
-By implementing these best practices, you can significantly enhance the security, reliability, and observability of your environment. Always consider the specific needs of your application and infrastructure to determine the most appropriate configurations.
 

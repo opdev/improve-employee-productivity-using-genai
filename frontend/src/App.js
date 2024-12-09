@@ -76,12 +76,12 @@ function App() {
           <Content style={{ padding: '0 50px' }}>
             <div className="site-layout-content">
             <Routes>
-            <Route path="/playground" element={<Playground user={user} />} />
+            {/* <Route path="/playground" element={<Playground user={user} />} /> */}
             <Route path="/chat" element={<Chat user={user} />} />
-            <Route path="/activity" element={<Activity user={user} /> } /> 
-            <Route path="/templates" element={<Templates user={user} />} />
-            <Route path="/history" element={<History user={user} />} />
-            <Route path="/" element={<Navigate to="/playground" replace />} /> 
+            {/* <Route path="/activity" element={<Activity user={user} /> } /> */}
+            {/* <Route path="/templates" element={<Templates user={user} />} /> */}
+            {/* <Route path="/history" element={<History user={user} />} /> */}
+            <Route path="/" element={<Navigate to="/chat" replace />} />
           </Routes>
             </div>
           </Content>
